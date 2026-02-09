@@ -82,11 +82,17 @@
         .attach-title { text-align: center; font-size: 13pt; font-weight: bold; margin-bottom: 15px; text-decoration: underline; }
         .attach-section-title { background-color: #eee; padding: 5px; font-weight: bold; border: 1px solid #000; margin-top: 10px; font-size: 10pt; }
         .attach-content { border: 1px solid #000; border-top: none; padding: 8px; line-height: 1.6; font-size: 9.5pt; }
+
+        /* 사이드바 스크롤 허용 */
+        aside#editor-sidebar {
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
-    <!-- [1단계 잠금] 시스템 진입 모달 (직원용/내부) -->
+    <!-- [1단계 잠금] 시스템 진입 모달 -->
     <div id="entry-lock" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-center justify-center no-print">
         <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center space-y-8 fade-in">
             <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
@@ -105,7 +111,7 @@
         </div>
     </div>
 
-    <!-- [2단계 잠금] 대표자 전용 모달 (보관함 접근 시) -->
+    <!-- [2단계 잠금] 대표자 전용 모달 -->
     <div id="rep-lock" class="fixed inset-0 bg-indigo-900/40 z-[110] hidden flex items-center justify-center no-print fade-in" style="backdrop-filter: blur(10px);">
         <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center space-y-6">
             <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
@@ -136,7 +142,7 @@
             </div>
         </div>
         
-        <div class="flex-1 p-6 space-y-2">
+        <div class="flex-1 p-6 space-y-2 overflow-y-auto">
             <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 sidebar-item-active">
                 <i data-lucide="home" class="w-5 h-5"></i>
                 <span class="text-sm font-medium">메인 화면</span>
@@ -223,7 +229,7 @@
                 </div>
             </div>
 
-            <!-- 보관함 목록 View (대표 전용) -->
+            <!-- 보관함 목록 View -->
             <div id="view-list" class="fade-in hidden space-y-6">
                 <div class="flex justify-between items-center">
                     <div class="relative w-96">
@@ -249,7 +255,7 @@
 
             <!-- 에디터 View -->
             <div id="view-editor" class="fade-in hidden flex flex-col lg:flex-row gap-10">
-                <aside class="no-print lg:w-96 shrink-0 space-y-6">
+                <aside id="editor-sidebar" class="no-print lg:w-96 shrink-0 space-y-6">
                     <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 space-y-8">
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 uppercase mb-4 tracking-widest">직무 선택</label>
@@ -258,6 +264,7 @@
                                 <button onclick="setJob('office')" id="job-off" class="flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400">사무/운영</button>
                             </div>
                         </div>
+
                         <div class="space-y-4">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">인적사항</label>
                             <input type="text" id="edit-name" oninput="updateCurrent('emp_name', this.value)" placeholder="성명" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none transition-all">
@@ -266,14 +273,32 @@
                             <input type="text" id="edit-addr" oninput="updateCurrent('emp_addr', this.value)" placeholder="주소" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
                             <input type="text" id="edit-email" oninput="updateCurrent('emp_email', this.value)" placeholder="이메일" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
                         </div>
+
                         <div class="space-y-4">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">근로조건</label>
                             <div class="grid grid-cols-2 gap-3">
                                 <input type="date" id="edit-date" oninput="updateCurrent('start_date', this.value)" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-xs">
-                                <input type="number" id="edit-probation" oninput="updateCurrent('probation', this.value)" placeholder="수습" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                <input type="number" id="edit-probation" oninput="updateCurrent('probation', this.value)" placeholder="수습개월" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
                             </div>
                             <input type="text" id="edit-salary" oninput="updateCurrent('salary', this.value)" placeholder="월 급여액(세전)" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
                         </div>
+
+                        <!-- 추가된 별지 세부 정보 입력란 -->
+                        <div class="space-y-4 pt-4 border-t border-slate-100">
+                            <label class="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest">별지 세부 정보</label>
+                            <div class="space-y-3">
+                                <input type="text" id="edit-attach-etc" oninput="updateCurrent('attach_etc', this.value)" placeholder="[별지1] 기타 업무/승인사항" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                <input type="text" id="edit-attach-storage" oninput="updateCurrent('attach_storage', this.value)" placeholder="자료 저장 위치 / 보고 채널" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                <input type="text" id="edit-attach-special" oninput="updateCurrent('attach_special', this.value)" placeholder="특이사항 / 제외 범위" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm">
+                                
+                                <div class="bg-slate-50 p-4 rounded-2xl space-y-2">
+                                    <span class="text-[10px] text-slate-400 font-bold block mb-1">휴가 신청서 미리보기 정보</span>
+                                    <input type="text" id="edit-vacation-date" oninput="updateCurrent('vacation_date', this.value)" placeholder="휴가 일정 (예: 2025-05-01~05-03)" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs">
+                                    <input type="text" id="edit-vacation-handover" oninput="updateCurrent('vacation_handover', this.value)" placeholder="인수인계 담당자 성명" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs">
+                                </div>
+                            </div>
+                        </div>
+
                         <button onclick="saveAndExit()" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-sm font-bold hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3">
                             <i data-lucide="save" class="w-5 h-5"></i> 계약 정보 임시 저장
                         </button>
@@ -286,7 +311,7 @@
 
     <script>
         // --- Core Data & Security ---
-        const DB_KEY = 'pg_hr_app_db_v4';
+        const DB_KEY = 'pg_hr_app_db_v5';
         const ENTRY_AUTH_KEY = 'pg_entry_authorized';
         const REP_AUTH_KEY = 'pg_rep_authorized';
         
@@ -295,8 +320,8 @@
         let isEntryAuth = sessionStorage.getItem(ENTRY_AUTH_KEY) === 'true';
         let isRepAuth = sessionStorage.getItem(REP_AUTH_KEY) === 'true';
         
-        let entryPassword = '1111'; // 직원용 진입 비번
-        let repPassword = '1234';   // 대표자 전용 비번
+        let entryPassword = '1111'; 
+        let repPassword = '1234';   
 
         // --- 보안 로직 ---
         function verifyEntry() {
@@ -376,11 +401,6 @@
             }
         }
 
-        function changePasswordPrompt() {
-            if(!isRepAuth) { alert('대표자 인증이 필요합니다.'); protectedNavigation('dashboard'); return; }
-            alert('비밀번호 변경 기능은 현재 로컬 버전에서 고정되어 있습니다.');
-        }
-
         // --- Rendering Helpers ---
         const f = (val, def = " [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ] ") => val || def;
         const formatDate = (dateStr) => {
@@ -408,7 +428,14 @@
         }
 
         function startNewContract() {
-            currentContract = { id: Date.now(), jobType: 'logistics', emp_name: '', emp_birth: '', emp_phone: '', emp_addr: '', emp_email: '', start_date: '', probation: '3', salary: '', updatedAt: new Date().toISOString() };
+            currentContract = { 
+                id: Date.now(), jobType: 'logistics', 
+                emp_name: '', emp_birth: '', emp_phone: '', emp_addr: '', emp_email: '', 
+                start_date: '', probation: '3', salary: '', 
+                attach_etc: '', attach_storage: '', attach_special: '',
+                vacation_date: '', vacation_handover: '',
+                updatedAt: new Date().toISOString() 
+            };
             switchView('editor');
             syncEditorFields();
             renderEditor();
@@ -432,6 +459,11 @@
             document.getElementById('edit-date').value = c.start_date;
             document.getElementById('edit-salary').value = c.salary;
             document.getElementById('edit-probation').value = c.probation;
+            document.getElementById('edit-attach-etc').value = c.attach_etc || '';
+            document.getElementById('edit-attach-storage').value = c.attach_storage || '';
+            document.getElementById('edit-attach-special').value = c.attach_special || '';
+            document.getElementById('edit-vacation-date').value = c.vacation_date || '';
+            document.getElementById('edit-vacation-handover').value = c.vacation_handover || '';
             setJob(c.jobType);
         }
 
@@ -523,7 +555,7 @@
             renderList(filtered);
         }
 
-        // --- 상세 별지 렌더링 포함 ---
+        // --- 상세 렌더링 시스템 ---
         function renderEditor() {
             const c = currentContract;
             const isLog = c.jobType === 'logistics';
@@ -561,8 +593,6 @@
 
                 <!-- 2페이지 -->
                 <div class="a4-page page-break">
-                    <h3 class="doc-sub">제4조의2 ~ 제4조의5 (임금구성, 자산, 지식재산권)</h3>
-                    <p>성과급은 회사 판단에 따르며, 회사 자산 및 계정은 목적 외 사용을 금한다. 업무 결과물은 회사에 귀속된다.</p>
                     <h3 class="doc-sub">제5조 (보고·협업 및 연락 의무 – 10-10-10 규칙)</h3>
                     <ol>
                         <li><strong>업무 시작 보고</strong>: 근무 시작 후 10분 이내 ‘일일 업무계획’ 보고.</li>
@@ -590,85 +620,63 @@
                         <div class="attach-section-title">1) 필수 책임업무(본인 책임)</div>
                         <div class="attach-content">
                             ${isLog ? `
-                                <span class="check-box"></span> 입고(검수/수량 확인/불량 분류/적치)<br>
-                                <span class="check-box"></span> 출고(피킹/패킹/송장 부착/마감 정리)<br>
-                                <span class="check-box"></span> 재고 관리(로케이션/실사/재고 이상 즉시 보고)<br>
+                                <span class="check-box"></span> 입고(검수/수량 확인/적치)<br>
+                                <span class="check-box"></span> 출고(피킹/패킹/송장 마감)<br>
+                                <span class="check-box"></span> 재고 관리(로케이션/실사 보고)<br>
                                 <span class="check-box"></span> 반품/교환 실물 처리 및 기록<br>
-                                <span class="check-box"></span> 자재관리(박스/테이프/라벨 등) 및 부족 보고<br>
-                                <span class="check-box"></span> 출고 마감 운영 준수(15~17 마감 운영)<br>
-                                <span class="check-box"></span> 일일 작업 보고(별지2 방식 또는 회사 지정 형태)
+                                <span class="check-box"></span> 출고 마감 운영 준수 (15~17 마감)
                             ` : `
-                                <span class="check-box"></span> 주문/송장 데이터 관리(마감 대응 포함)<br>
-                                <span class="check-box"></span> CS 처리(문의/교환/반품/불량, 출고 영향 건 우선)<br>
-                                <span class="check-box"></span> 재고/상품 데이터 관리(옵션/바코드/품절/대체안 정리)<br>
-                                <span class="check-box"></span> 출고 마감 영향 이슈 즉시 보고 및 정리<br>
-                                <span class="check-box"></span> 일일/주간 보고 제출(별지2)
+                                <span class="check-box"></span> 주문/송장 데이터 관리<br>
+                                <span class="check-box"></span> CS 처리(문의/교환/반품)<br>
+                                <span class="check-box"></span> 재고/상품 데이터 관리<br>
+                                <span class="check-box"></span> 출고 마감 영향 이슈 보고
                             `}
                         </div>
 
                         <div class="attach-section-title">2) 지원업무(요청 시)</div>
                         <div class="attach-content">
-                            ${isLog ? `
-                                <span class="check-box"></span> 행사/박람회 현장 물류 지원<br>
-                                <span class="check-box"></span> 도매/위탁 출고 준비 지원<br>
-                                <span class="check-box"></span> 기타: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]
-                            ` : `
-                                <span class="check-box"></span> 도매/거래처 응대 보조(견적/납기/정산 자료)<br>
-                                <span class="check-box"></span> 박람회/행사 준비 및 운영 지원<br>
-                                <span class="check-box"></span> 수출입 서류 정리 보조(인보이스/패킹리스트 등)<br>
-                                <span class="check-box"></span> 웹/디자인 운영 요청·검수 보조(외주 커뮤니케이션)
-                            `}
+                            ${isLog ? `<span class="check-box"></span> 행사 지원 <br>` : `<span class="check-box"></span> 거래처 응대 <br>`}
+                            <span class="check-box"></span> 기타: ${f(c.attach_etc)}
                         </div>
 
                         <div class="attach-section-title">3) 승인 필요 업무(단독 처리 금지)</div>
                         <div class="attach-content">
-                            <span class="check-box"></span> 임의 출고/임의 폐기/임의 반품 승인<br>
-                            <span class="check-box"></span> 재고 조정(재고 수정/손실 처리)<br>
-                            ${!isLog ? `
-                                <span class="check-box"></span> 가격/마진/정책 변경<br>
-                                <span class="check-box"></span> 대외 발송(공식 메일/공지/계약 관련)<br>
-                                <span class="check-box"></span> 환불/보상 예외 처리
-                            ` : ''}
-                            <span class="check-box"></span> 기타: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]
+                            <span class="check-box"></span> 임의 출고/폐기/반품 <br>
+                            <span class="check-box"></span> 재고 조정 및 수량 수정 <br>
+                            <span class="check-box"></span> 기타: ${f(c.attach_etc)}
+                        </div>
+
+                        <div class="attach-content" style="margin-top: 10px; border-top: 1px solid #000">
+                            <p>• 자료 저장 위치/보고 채널: ${f(c.attach_storage)}</p>
+                            <p>• 특이사항/제외 범위: ${f(c.attach_special)}</p>
                         </div>
                         <div style="margin-top: 20px; text-align: right">서명: 근로자 [ &nbsp;&nbsp;&nbsp;&nbsp; ] / 사업주 [ &nbsp;&nbsp;&nbsp;&nbsp; ]</div>
                     </div>
                 </div>
 
-                <!-- 4페이지: 별지2 -->
+                <!-- 4페이지: 별지2, 3 -->
                 <div class="a4-page page-break">
                     <div class="attach-box">
                         <div class="attach-title">[별지2] 업무보고·회의 운영 양식(공용)</div>
                         <p>• 작성자: ${name} &nbsp; • 작성일: ${today}</p>
                         <div class="attach-section-title">0) 고정 기준</div>
-                        <div class="attach-content">
-                            • 시작 보고: 10분 내 / 종료 보고: 10분 내 / 응답: 10분 내<br>
-                            • 출고 운영: 15~16 집중 / 16 송장마감 / 17 배송마감
-                        </div>
-                        <div class="attach-section-title">1) 일일 업무계획(시작 후 10분 이내)</div>
-                        <div class="attach-content" style="min-height:80px">
-                            • TOP3: 1) &nbsp;&nbsp;&nbsp;&nbsp; 2) &nbsp;&nbsp;&nbsp;&nbsp; 3)<br>
-                            • 마감 영향/긴급 이슈: 
-                        </div>
-                        <div class="attach-section-title">2) 일일 업무결과(종료 후 10분 이내)</div>
-                        <div class="attach-content" style="min-height:80px">
-                            • 완료 내역: <br>
-                            • 미완료/이월 사유: 
-                        </div>
+                        <div class="attach-content">시작 보고 10분 내 / 종료 보고 10분 내 / 응답 10분 내</div>
+                        <div class="attach-section-title">1) 일일 업무계획(TOP3 및 긴급 이슈)</div>
+                        <div class="attach-content" style="min-height:60px">입력된 계획 없음</div>
+                        <div class="attach-section-title">2) 일일 업무결과(완료/이월/마감결과)</div>
+                        <div class="attach-content" style="min-height:60px">입력된 결과 없음</div>
                     </div>
 
-                    <!-- 5페이지 개념이지만 여백상 합침: 별지3 -->
                     <div class="attach-box" style="margin-top:20px">
                         <div class="attach-title">[별지3] 휴가 신청서</div>
+                        <p>• 신청자: ${name} &nbsp; • 작성일: ${today}</p>
                         <div class="attach-section-title">1) 휴가 종류 및 일정</div>
                         <div class="attach-content">
-                            <span class="check-box"></span> 전일(1일) / <span class="check-box"></span> 반차 / <span class="check-box"></span> 시간휴가([ &nbsp; ]시간)<br>
-                            • 일정: 202[ &nbsp; ]-[ &nbsp; ]-[ &nbsp; ] ~ [ &nbsp; ]-[ &nbsp; ] (총 [ &nbsp; ]일)
+                            일정: ${f(c.vacation_date)}
                         </div>
                         <div class="attach-section-title">2) 마감 영향 및 인수인계(필수)</div>
                         <div class="attach-content">
-                            • 마감 영향: <span class="check-box"></span> 없음 / <span class="check-box"></span> 있음(내용: [ &nbsp;&nbsp;&nbsp;&nbsp; ])<br>
-                            • 인수인계: <span class="check-box"></span> 완료 / 담당자: [ &nbsp;&nbsp;&nbsp;&nbsp; ]
+                            인수인계 담당자: ${f(c.vacation_handover)}
                         </div>
                         <div style="margin-top: 15px; text-align: center">신청자 서명: (인) &nbsp;&nbsp;&nbsp;&nbsp; 관리자 승인: (인)</div>
                     </div>
